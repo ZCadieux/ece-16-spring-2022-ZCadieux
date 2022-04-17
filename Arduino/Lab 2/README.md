@@ -1,6 +1,6 @@
 [//]: <> (Titles)
 
-# README Lab 1
+# README Lab 2
 
 [//]: <> (Name and ID)
 
