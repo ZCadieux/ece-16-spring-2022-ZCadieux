@@ -1,3 +1,4 @@
+
 // setting PWM properties 
 const int pwmFrequency = 5000;  // Set the PWM frequency to 5KHz
 const int pwmChannel = 0;       // Use PWM channel 0
@@ -11,6 +12,7 @@ void setup () {
 }
 
 void loop() {
+     //write sample pwm signals to built in LED
      ledcWrite(pwmChannel, 0);
      delay(2000);
      ledcWrite(pwmChannel,127);

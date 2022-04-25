@@ -17,9 +17,12 @@ void loop() {
      // the buffer is full. Credit to Kyle for discovering the solution!
      if(sampleSensors() && Serial.availableForWrite()) {
           Serial.print(ax);
+          //Serial.print("ax");
           Serial.print(",");
           Serial.print(ay);
+          //Serial.print("ay");
           Serial.print(",");
           Serial.println(az);
+          //Serial.print("az");
      }
 }

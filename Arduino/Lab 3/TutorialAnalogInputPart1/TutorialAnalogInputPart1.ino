@@ -1,4 +1,4 @@
-const int accelX = A2;
+const int accelX = A0;
 
 void setup() {
   // put your setup code here, to run once:
@@ -12,6 +12,6 @@ void loop() {
   // put your main code here, to run repeatedly:
   int accel_val = analogRead(accelX);
   // Print the value (you did this in the last lab too)
-  <insert your code here>
+  Serial.println(accel_val);
 
 }
