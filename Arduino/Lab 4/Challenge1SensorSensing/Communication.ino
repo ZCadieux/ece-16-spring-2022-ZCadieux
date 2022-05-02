@@ -1,7 +1,7 @@
 /*
  * Precompiler directive elegance: 0 == Serial, 1 == Bluetooth
  */
-#define USE_BT 1
+#define USE_BT 0
 
 /*
  * This block allows us to use "Ser" throughout our codebase. 

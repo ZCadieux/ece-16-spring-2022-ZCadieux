@@ -1,6 +1,7 @@
 setup.py
 ECE16Lib/CircularList.py
 ECE16Lib/Communication.py
+ECE16Lib/IdleDetector.py
 ECE16Lib/__init__.py
 ECE16Lib.egg-info/PKG-INFO
 ECE16Lib.egg-info/SOURCES.txt

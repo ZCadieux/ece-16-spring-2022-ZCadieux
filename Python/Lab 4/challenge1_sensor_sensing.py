@@ -6,7 +6,7 @@ from time import time
 
 if __name__ == "__main__":
   num_samples = 100        # 5 seconds of data @ 50Hz
-  refresh_time = 0.01              # update the plot every 0.1s (10 FPS)
+  refresh_time = 0.1              # update the plot every 0.1s (10 FPS)
 
   # raw data lists
   times = CircularList([], num_samples)
@@ -22,7 +22,7 @@ if __name__ == "__main__":
   transformed = CircularList([], num_samples)
 
   #initiate communication
-  comms = Communication("COM6", 115200)
+  comms = Communication("COM3", 115200)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
 
@@ -45,6 +45,7 @@ if __name__ == "__main__":
 
         # modified data lists
         #average_x
+        
         n = 1 # num seconds to avg over
         vals2avg = np.array(ax[-50*n:])
         average_x.add(np.average(vals2avg))
@@ -69,25 +70,26 @@ if __name__ == "__main__":
           plt.clf()
 
           # plotting raw data
-          #plt.subplot(311)
+          plt.subplot(211, title='raw data')
           plt.plot(ax)
-          #plt.subplot(312)
+          plt.subplot(211)
           plt.plot(ay)
-          #plt.subplot(313)
+          plt.subplot(211)
           plt.plot(az)
 
           # plotting transformed data
-          """plt.subplot(814)
+          """plt.subplot(312, title='average_x')
           plt.plot(average_x)
-          plt.subplot(815)
+          plt.subplot(313, title='delta_x')
           plt.plot(delta_x)
-          plt.subplot(816)
+          
+          plt.subplot(312, title='L2')
           plt.plot(L2)
-          plt.subplot(817)
+          plt.subplot(313, title='L1')
           plt.plot(L1)
-          plt.subplot(818)
-          plt.plot(transformed)"""
-
+          """
+          plt.subplot(212, title='normalized_x')
+          plt.plot(transformed)
 
           plt.show(block=False)
           plt.pause(0.001)
