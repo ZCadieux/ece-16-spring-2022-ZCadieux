@@ -56,7 +56,7 @@ class Pedometer:
     # Filter the signal (detrend, LP, MA, etc…)
     ma = filt.moving_average(x, 20)                   # Compute Moving Average
     dt = filt.detrend(ma)                              # Detrend the Signal
-    grad = filt.gradient(dt)                           # Compute the Gradient
+    #grad = filt.gradient(dt)                           # Compute the Gradient
     freqs, power = filt.psd(x, len(x), 50)           # Power Spectral Density
     bl, al = filt.create_filter(3, 1, "lowpass", self.__fs)   # Low-pass Filter Design
     lp = filt.filter(bl, al, dt)                       # Low-pass Filter Signal
