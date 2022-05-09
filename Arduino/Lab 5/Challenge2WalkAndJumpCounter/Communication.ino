@@ -23,7 +23,7 @@ void setupCommunication() {
   #if USE_BT
     Ser.begin("ZACArduino"); // any unique name for BT
   #else
-    Ser.begin(115200);
+    Ser.begin(921600);
   #endif
 }
 
