@@ -8,6 +8,8 @@
 
 Zachary Cadieux A15912942
 
+Lab Partner: Gillian McMahon
+
 [//]: <> (Lab 1 Content)
 
 ## Tutorial 1 - Offline Data Analysis
@@ -35,4 +37,8 @@ This challenge essentially took the code from Tutorial 3, and then improved it t
 
 ## Challenge 2
 
+This challenge's primary hardship was in dealing with communicating the large amount of data from the Arduino to Python. Originally my partner and I attempted to send the data all at once, in one long string, however we found that was impractical due to limitations on the baud rate of the Arduino, it cut off the string at certain points which caused messy errors in trying to save the data. We ended up using a loop on both ends, on the Arduino to send the array of data as many messages, and on Python to keep receiving until all data in inputted, initially putting it in an array and then adding it to the Pedometer object to process it all at once. 
 
+We identified that jumps had peaks that were just over the upper threshold of our steps, so we were able to use our step upper bound as our jump lower bound. This required minor modifications to the Pedometer class, to take in and return the extra values. We also increased our baud rate, in an attempt to increase the speed of reading in the data from the Arduino to increase its responsiveness. Below is a video of it in action, in which I jump, and then take two steps, which is accurately displayed on both the LCD and the Python plot.
+
+[![Challenge 2 Video](https://youtube.com/shorts/txNtSAgsbGk?feature=share/0.jpg)](https://youtube.com/shorts/txNtSAgsbGk?feature=share "Lab 5 Challenge 2")
