@@ -7,25 +7,27 @@ import numpy as np
 if __name__ == "__main__":
   fs = 50                         # sampling rate
   num_samples = 500               # 5 seconds of data @ 50Hz
-  process_time = .1                # compute the step count every second
+  process_time = .001                # compute the step count every second
   ped = Pedometer(num_samples, fs, [], 25, 125, 125, 300)
   comms = Communication("COM5", 921600)
   comms.clear()                   # just in case any junk is in the pipes
   comms.send_message("wearable")  # begin sending data
   samples = []
   newData = False
+  steps, peaks_s, jumps, peaks_j, filtered = 0,0,0,0,0
   try:
     previous_time = time()
     while(True):
       message = comms.receive_message(288)
       newData = False
+      # check if messages come through
       if(message != None):
         newData = True
         while(message != None):
-          samples.append(message)
+          samples.append(message) # add to sample array
           message = comms.receive_message(288)
         try:
-          for data in samples:
+          for data in samples: # process sample array into data, add to pedometer
             if data != ['\r\n'] and len(data.split(",")) == 4:
               print(data.split(","))
               (m1, m2, m3, m4) = data.split(',')
@@ -34,32 +36,32 @@ if __name__ == "__main__":
           print(e)
           print("Bad Data")
           continue
-        # # Collect data in the pedometer
-        # ped.add(int(m2),int(m3),int(m4))
-        # if enough time has elapsed, process the data and plot it
+
         print("Processing...")
         steps, peaks_s, jumps, peaks_j, filtered = 0,0,0,0,0
-        try:
+        try: # try to process data, might go wrong if read in errors
           steps, peaks_s, jumps, peaks_j, filtered = ped.process()
         except(ValueError) as e:
             print("Bad Process")
             print(e)
         print("Step count: {:d}".format(steps))
         print("Jump count: {:d}".format(jumps))
-        comms.send_message("Steps: " + str(steps) + ",Jumps: " + str(jumps))
+        comms.send_message("Steps: " + str(steps) + ",Jumps: " + str(jumps)) # send results to Arduino
 
-        current_time = time()
-        if (current_time - previous_time > process_time or newData):
-          previous_time = current_time
-          plt.cla()
-          plt.plot(filtered)
-          plt.axhline(y = 10)
-          plt.axhline(y = 125)
-          plt.axhline(y = 300)
-          title_string = "Step Count: " + str(steps) + " Jump Count: " + str(jumps)
-          plt.title(title_string)
-          plt.show(block=False)
-          plt.pause(0.001)
+      current_time = time()
+      if (current_time - previous_time > process_time or newData):
+      # plot data locally
+        previous_time = current_time
+        plt.cla()
+        plt.plot(filtered)
+        plt.axhline(y = 25)
+        plt.axhline(y = 125)
+        plt.axhline(y = 300)
+        title_string = "Step Count: " + str(steps) + " Jump Count: " + str(jumps)
+        plt.title(title_string)
+        plt.show(block=False)
+        plt.pause(0.001)
+
   except(Exception, KeyboardInterrupt) as e:
     print(e)                     # Exiting the program due to exception
   finally:
