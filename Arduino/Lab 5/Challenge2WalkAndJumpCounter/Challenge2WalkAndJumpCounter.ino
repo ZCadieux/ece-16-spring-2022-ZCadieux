@@ -34,6 +34,7 @@ void loop() {
   }
   else if(command.length() > 0)
   {
+    //display step and jump count
     writeDisplay("", 0, true);
     writeDisplayCSV(command.c_str(), 1);
   }
@@ -44,6 +45,7 @@ void loop() {
     accelData[accelIndex] = response;
     accelIndex = accelIndex + 1;
 
+    //display current index being collected
     String indexString = "Index: " + String(accelIndex);
     writeDisplay(indexString.c_str(),2, false);
     if(accelIndex >= arrayLength)
@@ -56,7 +58,7 @@ void loop() {
   {
     //writeDisplay("Sending Data", 0, true);
     sendTime = currentTime;
-    //create super long string to send back
+    //create many messages to send back with data
     for(int i = 0; i<arrayLength; i = i+1)
     {
       message2Send = accelData[i];
