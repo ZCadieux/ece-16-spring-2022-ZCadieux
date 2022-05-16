@@ -7,8 +7,8 @@ import numpy as np
 
 if __name__ == "__main__":
   fs = 50                         # sampling rate
-  num_samples = 250               # 5 seconds of data @ 50Hz
-  process_time = 1                # compute the step count every second
+  num_samples = 500              # 5 seconds of data @ 50Hz
+  process_time = .5                # compute the step count every second
 
   ped = Pedometer(num_samples, fs, [])
 

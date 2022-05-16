@@ -8,47 +8,37 @@
 
 Zachary Cadieux A15912942
 
+Lab Partner: Gillian McMahon
+
 [//]: <> (Lab 1 Content)
 
 ## Tutorial 1 - Offline Data Analysis
 
-The first couple parts of this tutorial involve running some example code, to practice various methods of writing and reading information to and from data files. Running the tutorial_file_io.py program shows the peaks on the acceleration graph, as I took steps holding it. In the below graph, I marked the spikes where my steps occured.
+The first couple parts of this tutorial involve running some example code, to practice various methods of writing and reading information to and from data files. Running the tutorial_file_io.py program shows the peaks on the acceleration graph, as I took steps holding it. In the below graph, I marked the spikes where my steps occured. Other example data and images are located in the **data** and **images** folders, respectively. 
 ![Challenge 1](images/accelerometerWithStepsMarked.png)
 
-## Tutorial 2 - Python Plotting
+## Tutorial 2 - Digital Signal Processing (DSP)
 
-This tutorial contained the basics of plotting in Python, with easy reference examples of simple graphs and labels. The second part of the tutorial implements the first part plotting accelerometer data, which then is built upon in tutorial 3 and the challenges. 
+This tutorial contained instructions for data filtering and processing, along with the necessary code to add to ECE16Lib to do this in tutorial 2, 3, and the challenges. Using the various techniques on the sample data gave a good indication of different ways of processing the data to give different interpretations and understandings of how to view the data. After looking at each of these methods, we put them together into DSP.py, a module of functions in ECE16Lib, to package it up for easy future use.
 
-## Tutorial 3 - Live Plotting
+## Tutorial 3 - Pedometer Class
 
-This tutorial was a cool way to see live data outputs from the accelerometer, which is heavily used in the challenges. The addition of CircularList is a very helpful module for ECE16Lib, as it is an important tool for managing live data. 
+This tutorial led us through creating the Pedometer class, and using it to analyze data both on and offline, which is applicable in both challenges. To implement the process() method, I used the process from tutorial_dsp_module.py (tutorial 2) as a model. This worked well for the offline analysis, since it needed the same thresholds to effectively analyze that dataset. Then, for the online data analysis, I was able to use the provided script, along with some simply modification of the thresholds via trial and error to get upper and lower bounds for my step counts. 
 
 ## Challenge 1
 
-The concept for this challenge was to measure the values on the accelerometer, and use the format from tutorial 3 to live plot the data, as well as transformations of the data. While the calculations themselves and the formatting of the code was relatively simple, since it very closely followed the model from Tutorial 3, I ran into issues with the performance of my code, and ended up with latency in certain situations that made my plots lag almost half a minute behind the real world. I resolved this by adjusting the refresh and pause times, as well as by only graphing a few values at a time, rather than all 8 values at once. Below are all my plots, with the raw data visible in each (x, y, and z plotted on the same graph), average_x and delta_x in the first one, L2 and L1 in the second, and my own transformation in the third. For my transformation I chose to plot a normalization of x, taking the current x value divided by L2. 
+This challenge essentially took the code from Tutorial 3, and then improved it to the point where we were able to get an accurate count of the number of steps that we took. In order to display the data, we had Python send the number of steps over bluetooth every time the data was processed. In order to fine tune the data processing, we changed four parameters in the pedometer class. We changed the cutoff frequency for the lowpass filter to 2 instead of 1, which makes it so the filter passes more data, including slightly higher frequency data. We also adjusted the number of values included in the moving average, to take in less samples and therefore smooth out the data less so spikes would be more visible. Finally, we doubled the number of samples, so we had more data to work with, and simultaneously halved the process time to increase the sensitivity of the pedometer. 
 
-Note that in the gifs provided I have the board plugged into my computer, I had misplaced my battery so I did this under computer power, still using bluetooth. 
+[![Zach Walking with Step Counter](https://youtu.be/BOEVM8O4CSg/0.jpg)](https://youtu.be/BOEVM8O4CSg "Lab 5 Challenge 1 Zach")
 
-![Challenge 1](images/challenge1part1.gif)
+[![Gillian Walking with Step Counter](https://youtu.be/zzhZjk1T5Rs/0.jpg)](https://youtu.be/zzhZjk1T5Rs "Lab 5 Challenge 1 Gillian")
 
-![Challenge 1](images/challenge1part2.gif)
-
-![Challenge 1](images/challenge1part3.gif)
+[![LCD Step Counter](https://www.youtube.com/shorts/Q-Ygz3fIxVo/0.jpg)](https://www.youtube.com/shorts/Q-Ygz3fIxVo "Lab 5 Challenge 1 LCD")
 
 ## Challenge 2
 
-This challenge built on challenge 1, using the live plotting algorithm along with the transformations to build an algorithm to detect if the accelerometer has been idle for a certain amount of time. Before writing my code, I drew a state machine of the system. While it only has two states, the conditions for switching between states are a bit complex. After drawing up the state machine, I worked on identifying a suitable condition for determining if the accelerometer was active or inactive.
+This challenge's primary hardship was in dealing with communicating the large amount of data from the Arduino to Python. Originally my partner and I attempted to send the data all at once, in one long string, however we found that was impractical due to limitations on the baud rate of the Arduino, it cut off the string at certain points which caused messy errors in trying to save the data. We ended up using a loop on both ends, on the Arduino to send the array of data as many messages, and on Python to keep receiving until all data in inputted, initially putting it in an array and then adding it to the Pedometer object to process it all at once. 
 
-![Challenge 2](images/challenge2statemachine.png)
+We identified that jumps had peaks that were just over the upper threshold of our steps, so we were able to use our step upper bound as our jump lower bound. This required minor modifications to the Pedometer class, to take in and return the extra values. We also increased our baud rate, in an attempt to increase the speed of reading in the data from the Arduino to increase its responsiveness. Below is a video of it in action, in which I jump, and then take two steps, which is accurately displayed on both the LCD and the Python plot.
 
-I ended up using `abs(L2[-1]-L2_avg[-1]) > cutoff` as my condition, where L2[-1] is the L2 norm of the current data, and L2_avg[-1] is the average of the L2 norms across the past 2 seconds of data. This gives a good indication of motion, since it picks up motion in any axis, without using a hard threshold. The cutoff used took some tuning, I ended up using 40 since the buzzer added some noise to the measurement that could accidentally make it think it was moving when it wasn't, so I needed a relatively high threshold.
-
-Once I had determined these two factors, I began coding up my solution, setting up the proper conditions. I ran into some serial issues, but after spending some time tuning my timings and troubleshooting, I was able to smooth it out. 
-
-![Challenge 1](images/challenge2.gif)
-
-## Challenge 3
-
-This challenge primarily involved reorganizing my challenge 2 code, keeping the same logic but just restructuring it into new methods and changing the variable definitions to be internal. This was relatively simple, the most complicated part was ensuring that I was using the proper instances of variables, and making sure my indentation was correct when copy and pasting from my Challenge 2. Note the noisy data on the graph from the buzzer that I mentioned in Challenge 2.
-
-![Challenge 3](images/challenge3.gif)
+[![Challenge 2 Video](https://youtube.com/shorts/txNtSAgsbGk?feature=share/0.jpg)](https://youtube.com/shorts/txNtSAgsbGk?feature=share "Lab 5 Challenge 2")

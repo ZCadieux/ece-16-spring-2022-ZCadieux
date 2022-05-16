@@ -16,7 +16,7 @@ az = data[:,3]
 # Test the Pedometer with offline data
 ped = Pedometer(500, 50, [])
 ped.add(ax, ay, az)
-steps, peaks, filtered = ped.process()
+steps, peaks, jumps, peaks_j, filtered = ped.process()
 
 # Plot the results
 plt.plot(t, filtered)
