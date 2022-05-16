@@ -24,8 +24,8 @@ try:
         message = comms.receive_message()
         if(message!=None):
             try:
-                (m1, _, _, _, m2) = message.split(',')
-                hrm.add(int(m1)/1e3, int(m2))
+                (m1, _, _, _, m2) = message.split(',') # take in only necessary input data
+                hrm.add(int(m1)/1e3, int(m2)) # adjust time scaling
             except ValueError:
                 continue
 
@@ -34,7 +34,7 @@ try:
         if (current_time - previous_time > process_time):
           previous_time = current_time
           hr, peaks, filtered = hrm.process()
-          if peaks == 0:
+          if peaks == 0: # avoid division by 0
               continue
           print("Heart Rate: {:f}".format(hr))
 

@@ -16,19 +16,20 @@ fs = 10 # sampling rate hz
 num_samples = 120 # 2 min of data @ 10Hz
 process_time = 1
 
+# initial setup
 hrm = HRMonitor(num_samples, fs)
-
 comms = Communication("COM5", 115200)
 comms.clear()
 comms.send_message("wearable")
 cap = cv2.VideoCapture(0,cv2.CAP_DSHOW)
-sleep(1)
+sleep(1) # allow data to come in & finger to be placed to avoid initial errors
 try:
     previous_time = time.time()
     while(True):
+        # read in data from camera
         _, frame = cap.read()
         new_sample = frame.mean(axis=0).mean(axis=0)
-        new_sample = -new_sample[2] # replace the ? with index of the RED channel            
+        new_sample = -new_sample[2]           
         hrm.add(time.time_ns()/1e9, int(new_sample))
 
         # if enough time has elapsed, process the data and plot it
@@ -55,6 +56,7 @@ try:
 except(Exception, KeyboardInterrupt) as e:
     print(e) # exiting the program due to exception
 finally:
+    #close communication, release camera
     print("Sleep")
     comms.send_message("sleep") # stop sending data
     comms.close()
