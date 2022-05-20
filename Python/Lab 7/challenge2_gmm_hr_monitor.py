@@ -16,6 +16,7 @@ hrm = HRMonitor(num_samples, fs)
 hrm.train(".\\data") #train the GMM
 
 # Begin live data inputs
+print("Starting Comms!")
 comms = Communication("COM5", 115200)
 comms.clear()
 comms.send_message("wearable")
@@ -36,8 +37,7 @@ try:
         if (current_time - previous_time > process_time):
           previous_time = current_time
           hr, peaks, filtered = hrm.predict()
-          if peaks == 0: # avoid division by 0
-              continue
+          
           print("Heart Rate: {:f}".format(hr))
 
           plt.cla()
@@ -49,6 +49,7 @@ try:
 
 except(Exception, KeyboardInterrupt) as e:
     print(e) # exiting the program due to exception
+    print("Error in main loop")
 finally:
     comms.send_message("sleep") # stop sending data
     comms.close()
