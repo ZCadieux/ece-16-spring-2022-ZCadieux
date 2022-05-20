@@ -101,6 +101,7 @@ class HRMonitor:
     for subject in subjects:
       for trial in range(1,6):
         t, ppg, hr, fs_est = self.get_data(directory, subject, trial, self.__fs)
+        print(ppg)
         train_data = np.append(train_data, self.process(ppg, True))
 
     # Train the GMM
