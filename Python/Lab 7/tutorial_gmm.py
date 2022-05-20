@@ -70,6 +70,7 @@ if __name__ == "__main__":
   # Load all the data for the subject
   train_data = np.array([])
   for trial in range(1,6):
+    print(directory, subject, trial, fs)
     t, ppg, hr, fs_est = get_data(directory, subject, trial, fs)
     ppg_filtered = process(ppg)
     train_data = np.append(train_data, ppg_filtered)
