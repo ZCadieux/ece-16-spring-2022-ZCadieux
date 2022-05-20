@@ -89,6 +89,14 @@ class HRMonitor:
     seconds = num_samples / fs
     hr = count / seconds * 60 # 60s in a minute
     return hr, peaks
+
+  # Filter the signal (as in the prior lab)
+  def MLprocess(self, x):
+    x = filt.detrend(x, 25)
+    x = filt.moving_average(x, 5)
+    x = filt.gradient(x)
+    return filt.normalize(x)
+
   
   """
   User facing training call for ML prediction
@@ -101,7 +109,7 @@ class HRMonitor:
     for subject in subjects:
       for trial in range(1,6):
         t, ppg, hr, fs_est = self.get_data(directory, subject, trial, self.__fs)
-        train_data = np.append(train_data, self.process(ppg, True))
+        train_data = np.append(train_data, self.MLprocess(ppg))
 
     # Train the GMM
     train_data = train_data.reshape(-1,1) # convert from (N,1) to (N,) vector
@@ -113,7 +121,7 @@ class HRMonitor:
   def predict(self):
     # Grab only the new samples into a NumPy array
     x = np.array(self.__ppg[ -self.__new_samples: ])
-    entry = self.process(x, True)
+    entry = self.MLprocess(x)
     self.__filtered.add(entry.tolist())
 
     labels = self.__gmm.predict(entry.reshape(-1,1))
