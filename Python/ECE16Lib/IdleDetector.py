@@ -81,12 +81,16 @@ class IdleDetector:
         self.__comms.send_message("active") # send active
         print('active 1 sec')
         self.__lastActive = self.__current_time # record time
+        return True
+    return False
 
   def __inactivity_check(self):
     if(self.__lastActive+self.__idleCheckTime < self.__current_time): # if inactive for 5 seconds
         print('inactive 5 sec')
         self.__comms.send_message("inactive") # send inactive
         self.__lastInactive = self.__current_time # record time
+        return True
+    return False
 
   def __plot(self):
       plt.cla()
@@ -96,25 +100,24 @@ class IdleDetector:
       plt.show(block=False)
       plt.pause(0.01)
 
-  def detectIdle(self):
+  def detectIdle(self, message):
     try:
       previous_time = 0
-      while(True):
-        message = self.__comms.receive_message()
+      if(message != None):
+          self.__add_data(message)
+          self.__modified_data(message)
+          self.__current_time = time()
 
-        if(message != None):
-            self.__add_data(message)
-            self.__modified_data(message)
-            self.__current_time = time()
+          if (self.__current_time - previous_time > self.__refresh_time):
+              previous_time = self.__current_time
+              self.__plot()
+              if abs(self.L2[-1]-self.L2_avg[-1]) > self.__cutoff: # condition for activity
+                  if self.__activity_check():
+                    return "active"
 
-            if (self.__current_time - previous_time > self.__refresh_time):
-                previous_time = self.__current_time
-                self.__plot()
-                if abs(self.L2[-1]-self.L2_avg[-1]) > self.__cutoff: # condition for activity
-                    self.__activity_check()
-
-                else: #if doesnt meet condition for activity
-                    self.__inactivity_check()
+              else: #if doesnt meet condition for activity
+                  if self.__inactivity_check():
+                    return "inactive"
 
     except(Exception, KeyboardInterrupt) as e:
         print(e)                     # Exiting the program due to exception

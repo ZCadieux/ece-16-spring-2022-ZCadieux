@@ -5,6 +5,7 @@ ECE16Lib/DSP.py
 ECE16Lib/HRMonitor.py
 ECE16Lib/IdleDetector.py
 ECE16Lib/Pedometer.py
+ECE16Lib/Weather.py
 ECE16Lib/__init__.py
 ECE16Lib.egg-info/PKG-INFO
 ECE16Lib.egg-info/SOURCES.txt
