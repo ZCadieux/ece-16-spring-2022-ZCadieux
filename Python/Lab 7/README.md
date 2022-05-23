@@ -26,9 +26,14 @@ For this challenge we used the LOSOV method from Tutorial 2 to estimate the hear
 
 RMSE is valuable because it gives a standard metric for error that accounts purely for deviation from the true value, rather than possibly being offset by directional error, and by taking the square root it provides it on a scale that is directly applicable to the actual values, telling us that in this case our standard error is about 4 off from the ground truth. Correlation is also an important factor because it gives an idea of how well our predictions and the real values have matching trends, and bias tells us if we're significantly offset either above or below the true values. I chose these to help me eliminate bad values and pick out which data points I needed to check, since I could see how including or excluding certain data could effect the correlation, and bias helped ensure we weren't systematically over or under estimating the real values.
 
-## Challenge 2 - Online Heart Rate Monitor
+## Challenge 2 - GMM HR Monitor
 
+For this challenge, I implemented the train and predict methods in the HRMonitor class mostly by using tutorial 2 as a model for how it should run. I took the main part of tutorial_gmm_losov.py and broke it up into the section involved with training and the part that is used to actually run the model. I also reproduced some of the other functions in that tutorial file within the HRMonitor class as helper functions, to make sure I was able to get all the functionality while keeping it clean and readable. The code in the actual challenge file essentially follows the same format as the online HRM from Lab 6, just with a call to the training function at the beginning. Preserving non ML usage was a bit tricky, but it just involved carefully reusing the process function that already existed. 
 
+[![Lab 7 Challenge 2](https://youtu.be/-rf_7ZuZu1k/0.jpg)](https://youtu.be/-rf_7ZuZu1k "Lab 7 Challenge 2")
 
-## Challenge 3 - OpenCV Heart Rate Monitor
+## Challenge 3 - Complete Wearable
 
+This challenge involved incorporating parts from all of the previous labs. The Pedometer and Heart Monitor classes were easy to incorporate, as they were already built for the same kind of standardized usage loop. However, the IdleDetector and Weather modules required a bit more work to incorporate, as each of these were built in such a way as to work well independently, but not as parts of a larger program. With some minor refactoring to make them rely heavier on OOP and taking data inputs through add functions rather than directly having their own communicator objects, I was able to incorporate all the pieces together, including the motor to indicate inactivity, and the button to reset the step counter. Note that in the video, my step count is less accurate than in Lab 5, as a result of a slightly different environment and not taking the time to recalibrate the thresholds or algorithm. Eventually, this could be done with a GMM similar to the Heart Monitor!
+
+[![Lab 7 Challenge 3](https://youtube.com/shorts/wB4Yxw8FJo4?feature=share/0.jpg)](https://youtube.com/shorts/wB4Yxw8FJo4?feature=share "Lab 7 Challenge 3")
