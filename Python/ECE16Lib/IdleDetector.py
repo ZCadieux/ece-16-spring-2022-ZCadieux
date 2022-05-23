@@ -37,15 +37,16 @@ class IdleDetector:
   '''
   Initialize the class instance
   '''
-  def __init__(self, serial_name=None, baud_rate=None):
+  def __init__(self, serial_name=None, baud_rate=None, cutoff = None):
     if(serial_name != None):
       self.__comms = Communication(serial_name, baud_rate)
       self.__comms.clear()                   # just in case any junk is in the pipes
       self.__comms.send_message("wearable")  # begin sending data
+      self.__cutoff = cutoff
 
-  def __add_data(self, message):
+  def add_data(self, message):
     try: 
-      (m1, m2, m3, m4) = message.split(',') # split up info
+      (m1, m2, m3, m4, __) = message.split(',') # split up info
     except ValueError:        # if corrupted data, skip the sample
         return
     
@@ -55,14 +56,16 @@ class IdleDetector:
     self.ay.add(int(m3))
     self.az.add(int(m4))
 
+    self.__modified_data(message)
+
   def __modified_data(self, message):
     try: 
-      (m1, m2, m3, m4) = message.split(',') # split up info
+      (m1, m2, m3, m4, __) = message.split(',') # split up info
     except ValueError:        # if corrupted data, skip the sample
         return
     # modified data lists
     #average_x
-    n = 3 # num seconds to avg over
+    n = 2 # num seconds to avg over
     vals2avg = np.array(self.ax[-50*n:])
     self.average_x.add(np.average(vals2avg))
     vals2avg = np.array(self.ay[-50*n:])
@@ -97,23 +100,18 @@ class IdleDetector:
 
   def __plot(self):
       plt.cla()
-      plt.plot(self.ax)
-      plt.plot(self.ay)
-      plt.plot(self.az)
+      plt.plot(self.L2[-1]-self.L2_avg[-1])
+      plt.axhline(y=self.__cutoff)
       plt.show(block=False)
       plt.pause(0.01)
 
-  def detectIdle(self, message):
+  def detectIdle(self):
     try:
       previous_time = 0
-      if(message != None):
-          self.__add_data(message)
-          self.__modified_data(message)
-          self.__current_time = time()
+      self.__current_time = time()
 
-          if (self.__current_time - previous_time > self.__refresh_time):
+      if (self.__current_time - previous_time > self.__refresh_time):
               previous_time = self.__current_time
-              #self.__plot()
               #print("activity check")
               if abs(self.L2[-1]-self.L2_avg[-1]) > self.__cutoff: # condition for activity
                   if self.__activity_check():

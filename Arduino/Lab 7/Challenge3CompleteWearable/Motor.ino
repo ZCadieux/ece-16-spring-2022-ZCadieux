@@ -17,7 +17,7 @@ void activateMotor(int motorPower)
 {
   // set duty cycle to input
   ledcWrite(pwmChannel, motorPower);
-  Serial.println("Activating Motor!");
+  //Serial.println("Activating Motor!");
 }
 
 void deactivateMotor()

@@ -62,13 +62,13 @@ void writeDisplayCSV(String message, int commaCount) {
           {
             subMessage = message.substring(startIndex, message.length());
           }
-          if(subMessage.indexOf("inactive") >=0)
+          if(subMessage.indexOf("active") >=0)
           {
-            activity = "inactive";
-          }
-          else
-          {
-            activity = "active";
+            activity = true;
+            if(subMessage.indexOf("in") >= 0)
+            {
+              activity = false;
+            }
           }
 
           startIndex = index + 1; // skip over the comma

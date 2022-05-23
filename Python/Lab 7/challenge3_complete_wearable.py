@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 from time import sleep
 from time import time
 import numpy as np
+import traceback
 
 # Collect num_samples from the MCU
 fs = 50 # sampling rate hz
@@ -34,16 +35,21 @@ try:
     while(True):
         message = comms.receive_message()
         if(message!=None):
-            #print(message)
             if "reset" in message:
-                ped.reset()
-                hrm.reset()
-                continue
+                try:
+                    ped.reset()
+                    hrm.reset()
+                    continue
+                except:
+                    continue
             try:
                 (m1, ax, ay, az, m2) = message.split(',') # take in all necessary input data
                 hrm.add(int(m1)/1e3, int(m2)) # adjust time scaling
                 ped.add(int(ax),int(ay),int(az))
-            except ValueError:
+                det.add_data(message)
+            except ValueError as e:
+                print(e)
+                print("Add error")
                 continue
 
         # if enough time has elapsed, process the data and plot it
@@ -52,7 +58,11 @@ try:
           previous_time = current_time
 
           #print("Weather")
-          weather = weth.get_weather()
+          try:
+            weather = weth.get_weather()
+          except:
+              print("Weather error")
+              continue
           #print("HRMonitor")
           try:
             hr, peaks, filtered_hrm = hrm.predict()
@@ -67,12 +77,15 @@ try:
             print(e)
             continue
           #print("Idle Detector")
-          status = det.detectIdle(str(m1) + ',' + str(ax) + ',' + str(ay) + ',' + str(az))
+          try:
+            status = det.detectIdle()
+          except:
+              print("Idle Detector Error")
           
-          print("Heart Rate: {:f}".format(hr))
-          print("Step Count: {:f}".format(steps))
-          print("Status:", status)
-          print("Weather:", weather)
+          #print("Heart Rate: {:f}".format(hr))
+          #print("Step Count: {:f}".format(steps))
+          #print("Status:", status)
+          #print("Weather:", weather)
 
           """
           plt.cla()
@@ -92,6 +105,7 @@ try:
 except(Exception, KeyboardInterrupt) as e:
     print(e) # exiting the program due to exception
     print("Error in main loop")
+    print(traceback.format_exc())
 finally:
     comms.send_message("sleep") # stop sending data
     comms.close()

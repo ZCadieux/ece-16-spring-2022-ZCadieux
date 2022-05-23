@@ -90,4 +90,4 @@ class Pedometer:
     self.__steps = 0
     self.__jumps = 0
     self.__l1.clear()
-    self.__filtered = np.zeros(self.__num_samples)
+    self.__filtered = CircularList([], self.__num_samples)

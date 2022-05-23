@@ -10,7 +10,7 @@ String text = "";
 int hr = 0;
 const int BUTTON_PIN = 14;
 int prevState = LOW;
-String activity = "";
+bool activity = true;
 
 /*
  * Initialize the various components of the wearable
@@ -41,6 +41,9 @@ void loop() {
     sending = true;
     writeDisplay("Boot up: ", 0, true);
   }
+  else if (command != ""){
+      writeDisplayCSV(command, 3);
+    }
   
 
   if(sending && sampleSensors()) {
@@ -48,20 +51,19 @@ void loop() {
     response += String(ax) + "," + String(ay) + "," + String(az);
     response += "," + String(ppg);
     sendMessage(response);
-    if (command != ""){
-      writeDisplayCSV(command, 3);
-    }
   }
+  
   if(prevState == LOW && digitalRead(BUTTON_PIN) == HIGH)
   {
     sendMessage("reset");
     digitalWrite(LED_BUILTIN, HIGH);
     delay(10);
   }
+  
   prevState = digitalRead(BUTTON_PIN);
   digitalWrite(LED_BUILTIN, LOW);
 
-  if(activity == "inactive")
+  if(activity == false)
   {
     activateMotor(255);
   }
