@@ -57,26 +57,26 @@ try:
         if (current_time - previous_time > process_time):
           previous_time = current_time
 
-          #print("Weather")
+          # update all objects in try excepts, to isolate errors and prevent crashing
           try:
             weather = weth.get_weather()
           except:
               print("Weather error")
               continue
-          #print("HRMonitor")
+
           try:
             hr, peaks, filtered_hrm = hrm.predict()
           except:
               print("HRM error")
               continue
-          #print("Pedometer")
+          
           try:
             steps, peaks, jumps, jumpPeaks, filtered_ped = ped.process()
           except ValueError as e:
             print("Pedometer Error")
             print(e)
             continue
-          #print("Idle Detector")
+
           try:
             status = det.detectIdle()
           except:
@@ -87,18 +87,7 @@ try:
           #print("Status:", status)
           #print("Weather:", weather)
 
-          """
-          plt.cla()
-          plt.subplot(211)
-          plt.plot(filtered_hrm)
-          plt.title("Heart Rate: %d" % hr)
-
-          plt.subplot(212)
-          plt.plot(filtered_ped)
-          plt.title("Step Count: %d" % steps)
-
-          plt.show(block=False)
-          plt.pause(0.001)"""
+          #send info to arduino
           comms.send_message("HR:" + str(int(hr)) + " Steps:" + str(int(steps)) + ",Status: " + status + "," + weather)
           print("HR: " + str(int(hr)) + ",Steps: " + str(int(steps)) + ",Status: " + status + "," + weather)
 
