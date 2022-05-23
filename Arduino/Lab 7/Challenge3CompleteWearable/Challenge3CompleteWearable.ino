@@ -8,6 +8,9 @@ int sampleTime = 0; // Time of last sample (in Sampling tab)
 bool sending;
 String text = "";
 int hr = 0;
+const int BUTTON_PIN = 14;
+int prevState = LOW;
+String activity = "";
 
 /*
  * Initialize the various components of the wearable
@@ -20,6 +23,9 @@ void setup() {
   setupMotor();
   sending = false;
   writeDisplay("Sleep", 0, true);
+
+  pinMode(BUTTON_PIN, INPUT);  
+  pinMode(LED_BUILTIN, OUTPUT);
 }
 
 /*
@@ -42,7 +48,25 @@ void loop() {
     response += String(ax) + "," + String(ay) + "," + String(az);
     response += "," + String(ppg);
     sendMessage(response);
-    
-    writeDisplayCSV(command, 3)
+    if (command != ""){
+      writeDisplayCSV(command, 3);
+    }
+  }
+  if(prevState == LOW && digitalRead(BUTTON_PIN) == HIGH)
+  {
+    sendMessage("reset");
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(10);
+  }
+  prevState = digitalRead(BUTTON_PIN);
+  digitalWrite(LED_BUILTIN, LOW);
+
+  if(activity == "inactive")
+  {
+    activateMotor(255);
+  }
+  else
+  {
+    deactivateMotor();
   }
 }

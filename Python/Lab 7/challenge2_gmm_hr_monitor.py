@@ -9,7 +9,7 @@ import numpy as np
 
 # Collect num_samples from the MCU
 fs = 50 # sampling rate hz
-num_samples = 500 # 1 min of data @ 50Hz
+num_samples = 250 # 1 min of data @ 50Hz
 process_time = 1
 
 hrm = HRMonitor(num_samples, fs)
@@ -44,7 +44,7 @@ try:
           plt.plot(filtered)
           plt.title("Heart Rate: %d" % hr)
           plt.show(block=False)
-          plt.pause(0.001)
+          plt.pause(0.01)
           comms.send_message(str(int(hr)))
 
 except(Exception, KeyboardInterrupt) as e:

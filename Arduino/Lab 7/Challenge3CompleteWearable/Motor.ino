@@ -23,5 +23,5 @@ void activateMotor(int motorPower)
 void deactivateMotor()
 {
   // set duty cycle to 0
-  ledcWrite(pwmChannel, 255);
+  ledcWrite(pwmChannel, 0);
 }

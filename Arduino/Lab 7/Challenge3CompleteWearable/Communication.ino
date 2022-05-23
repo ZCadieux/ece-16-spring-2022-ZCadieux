@@ -51,5 +51,3 @@ String receiveMessage() {
 void sendMessage(String message) {
   Ser.println(message);
 }
-
-}

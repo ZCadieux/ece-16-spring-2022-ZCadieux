@@ -39,19 +39,37 @@ void writeDisplay(const char * message, int row, bool erase) {
     oled.print(message);
 }
 
+void clearDisplay()
+{
+  oled.clearDisplay();
+}
+
 /*
  * A function to write a CSV message on multiple lines on the OLED.
  * The "commaCount" argument says how many commas are in the String.
  * NOTE: The OLED can only display 4 lines (a maximum of 3 commas).
  */
 void writeDisplayCSV(String message, int commaCount) {
+     clearDisplay();
      int startIndex = 0;
      for(int i=0; i<=commaCount; i++) {
           // find the index of the comma and store it in startIndex
           int index = message.indexOf(',', startIndex);           
 
           // take everything in the string up until the comma
-          String subMessage = message.substring(startIndex, index); 
+          String subMessage = message.substring(startIndex, index);
+          if(i==commaCount)
+          {
+            subMessage = message.substring(startIndex, message.length());
+          }
+          if(subMessage.indexOf("inactive") >=0)
+          {
+            activity = "inactive";
+          }
+          else
+          {
+            activity = "active";
+          }
 
           startIndex = index + 1; // skip over the comma
 

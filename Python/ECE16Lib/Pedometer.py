@@ -27,7 +27,7 @@ class Pedometer:
   """
   Initialize the class instance
   """
-  def __init__(self, num_samples, fs, data=None, low_s = 10, high_s = 150, low_j=150, high_j = 300):
+  def __init__(self, num_samples, fs, data=None, low_s = 20, high_s = 100, low_j=150, high_j = 300):
     self.__steps = 0
     self.__jumps = 0
     self.__num_samples = num_samples

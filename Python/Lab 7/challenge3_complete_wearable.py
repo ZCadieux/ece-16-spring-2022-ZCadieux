@@ -12,8 +12,8 @@ import numpy as np
 
 # Collect num_samples from the MCU
 fs = 50 # sampling rate hz
-num_samples = 500 # 1 min of data @ 50Hz
-process_time = .5
+num_samples = 250 # 1 min of data @ 50Hz
+process_time = 1
 
 # Initialize objects
 weth = Weather()
@@ -34,6 +34,11 @@ try:
     while(True):
         message = comms.receive_message()
         if(message!=None):
+            #print(message)
+            if "reset" in message:
+                ped.reset()
+                hrm.reset()
+                continue
             try:
                 (m1, ax, ay, az, m2) = message.split(',') # take in all necessary input data
                 hrm.add(int(m1)/1e3, int(m2)) # adjust time scaling
@@ -46,13 +51,30 @@ try:
         if (current_time - previous_time > process_time):
           previous_time = current_time
 
+          #print("Weather")
           weather = weth.get_weather()
-          hr, peaks, filtered_hrm = hrm.predict()
-          steps, peaks, filtered_ped = ped.process()
-          status = det.detectIdle(message[:4])
+          #print("HRMonitor")
+          try:
+            hr, peaks, filtered_hrm = hrm.predict()
+          except:
+              print("HRM error")
+              continue
+          #print("Pedometer")
+          try:
+            steps, peaks, jumps, jumpPeaks, filtered_ped = ped.process()
+          except ValueError as e:
+            print("Pedometer Error")
+            print(e)
+            continue
+          #print("Idle Detector")
+          status = det.detectIdle(str(m1) + ',' + str(ax) + ',' + str(ay) + ',' + str(az))
           
           print("Heart Rate: {:f}".format(hr))
+          print("Step Count: {:f}".format(steps))
+          print("Status:", status)
+          print("Weather:", weather)
 
+          """
           plt.cla()
           plt.subplot(211)
           plt.plot(filtered_hrm)
@@ -63,8 +85,8 @@ try:
           plt.title("Step Count: %d" % steps)
 
           plt.show(block=False)
-          plt.pause(0.001)
-          comms.send_message(str(int(hr)) + "," + str(int(steps)) + "," + status + "," + weather)
+          plt.pause(0.001)"""
+          comms.send_message("HR:" + str(int(hr)) + " Steps:" + str(int(steps)) + ",Status: " + status + "," + weather)
           print("HR: " + str(int(hr)) + ",Steps: " + str(int(steps)) + ",Status: " + status + "," + weather)
 
 except(Exception, KeyboardInterrupt) as e:
