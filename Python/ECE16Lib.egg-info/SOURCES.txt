@@ -3,6 +3,7 @@ ECE16Lib/CircularList.py
 ECE16Lib/Communication.py
 ECE16Lib/DSP.py
 ECE16Lib/HRMonitor.py
+ECE16Lib/HandTracker.py
 ECE16Lib/IdleDetector.py
 ECE16Lib/Pedometer.py
 ECE16Lib/Weather.py
