@@ -14,7 +14,7 @@ process_time = 1
 
 hrm = HRMonitor(num_samples, fs)
 
-comms = Communication("COM5", 115200)
+comms = Communication("COM4", 115200)
 comms.clear()
 comms.send_message("wearable")
 sleep(1)
