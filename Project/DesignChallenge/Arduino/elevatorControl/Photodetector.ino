@@ -5,6 +5,10 @@
 #include "MAX30105.h" // include the Photodetector library
 MAX30105 photoSensor; // instantiate the Photodetector object
 const int MAX_READING = 32767; // 2^15-1; might change w/config – TEST IT!!
+const int PPG_avg = 32000;
+const int PPG_thresh = 750;
+const int PPG_checkTime = 100;
+int PPG_lastCheck = millis();
 
 /*
  * Initialize the sensor to use red, green, and IR LEDs for the best signal
@@ -37,4 +41,14 @@ void setupPhotoSensor() {
 void readPhotoSensor() {
   // Get heartbeat pulse data and invert it
   ppg = MAX_READING - photoSensor.getIR();
+}
+
+bool checkForHand()
+{
+  if(ppg + PPG_thresh < PPG_avg && millis()-PPG_lastCheck > PPG_checkTime)
+  {
+    PPG_lastCheck = millis(); //only need to pause if hand is present
+    return true;
+  }
+  return false;
 }

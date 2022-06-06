@@ -1,23 +1,20 @@
 from ECE16Lib.Communication import Communication
-from ECE16Lib.CircularList import CircularList
 from ECE16Lib.HandTracker import HandTracker
-from matplotlib import pyplot as plt
-import ECE16Lib.DSP as filt
 from time import time
 from time import sleep
-import numpy as np
 import traceback
 
 if __name__ == "__main__":
-    num_samples = 100              #5 seconds of data @ 50Hz
-    process_time = .1            #check finger count 60 times a second
+    num_samples = 100           
+    process_time = .5          
     
     tracker = HandTracker(num_samples) # HandTracker using defaults of 2, .8, 0
-    rawRange = CircularList([], num_samples)
-    rangeVals = CircularList([], num_samples)
     threshold = 100
+    getFloor = False
+    fingCount = 0
+    moving = False
 
-    comms = Communication('COM3', 115200)
+    comms = Communication('COM5', 115200)
     comms.clear()                   # just in case any junk is in the pipes
     comms.send_message("wearable")  # begin sending data
     sleep(1)
@@ -27,36 +24,47 @@ if __name__ == "__main__":
             message = comms.receive_message()
             if(message != None):
                 try:
-                    (ardTime, rawPPG) = message.split(',')
-                    rawRange.add(int(rawPPG))
-                    print(rawPPG)
+                    if("Hand" in message):
+                        if not getFloor:
+                            getFloor = True
+                            previous_time = current_time
+                        else:
+                            print("Cancelled")
+                            comms.send_message("cancelled")
+                            getFloor = False
+                    if("Arrived" in message):
+                        moving = False
+                        print("Arrived!")
+                    if("moving" in message):
+                        print("moving")
+                        moving = True
+                        continue
+
                 except ValueError:        # if corrupted data, skip the sample
                     continue
 
+            if(moving):
+                continue
+
             #Read in video
             tracker.getHands() #get data
-
-            ppg = np.array(rawRange)
-            #rangeVals = filt.detrend(ppg)
-
-            print(rawRange[-1])
-            fingCount = tracker.processImage() #process image
-
-            #print(str(fingCount))
             comms.send_message(str(fingCount))
             tracker.showHands()
+
+            fingCount = tracker.processImage() #process image
 
 
             # if enough time has elapsed, process the data and plot it
             current_time = time()
             if (current_time - previous_time > process_time):
                 previous_time = current_time
-
-                plt.cla()
-                plt.plot(ppg)
-                plt.title("Range (PPG)")
-                plt.show(block=False)
-                plt.pause(0.001)
+                if(getFloor):
+                    print("Checking for Floor...")
+                    #print(tracker.checkFinger())
+                    if(tracker.checkFinger()):
+                        comms.send_message("Floor " + str(fingCount))
+                        getFloor = False
+                        print("Sent floor!")
 
     except(Exception, KeyboardInterrupt) as e:
         print(e)                     # Exiting the program due to exception
