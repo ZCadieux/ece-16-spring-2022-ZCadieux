@@ -52,6 +52,8 @@ class Ship(sprite.Sprite):
         self.image = IMAGES['ship']
         self.rect = self.image.get_rect(topleft=(375, 540))
         self.speed = 5
+        self.speed_mult = 1.0
+
 
     def update(self, keys, *args):
         if keys[K_LEFT] and self.rect.x > 10:
@@ -61,10 +63,14 @@ class Ship(sprite.Sprite):
         game.screen.blit(self.image, self.rect)
 
     def update_udp_socket(self, direction):
+        print("direction: ", direction)
+        if isinstance(direction, float):
+            print("is a float")
+            self.speed_mult = direction
         if direction == "LEFT" and self.rect.x > 10:
-            self.rect.x -= self.speed
+            self.rect.x -= self.speed_mult * self.speed
         if direction == "RIGHT" and self.rect.x < 740:
-            self.rect.x += self.speed
+            self.rect.x += self.speed_mult * self.speed
         game.screen.blit(self.image, self.rect)
 
 
@@ -466,9 +472,15 @@ class SpaceInvaders(object):
     ''' ============================================================ '''
     def check_input_udp_socket(self):
         try:
-            msg, _ = mySocket.recvfrom(1024) # receive 1024 bytes
+            msg, self.addr = mySocket.recvfrom(1024) # receive 1024 bytes
             msg = msg.decode('utf-8')
             print("Command: " + msg)
+
+            if ("1.0" in msg or "2.0" in msg or "3.0" in msg):
+                print("in num message")
+                msg = float(msg)
+                self.player.update_udp_socket(msg)
+                
 
             if msg == "QUIT":
                 sys.exit()
@@ -544,6 +556,12 @@ class SpaceInvaders(object):
         self.screen.blit(self.enemy2, (318, 320))
         self.screen.blit(self.enemy3, (318, 370))
         self.screen.blit(self.enemy4, (299, 420))
+    
+    ### added to buzz motor
+    def buzzmotor(self):
+        buzz = "buzzer"
+        print("addr: ", self.addr)
+        mySocket.sendto(buzz.encode("utf-8"), self.addr)
 
     def check_collisions(self):
         sprite.groupcollide(self.bullets, self.enemyBullets, True, True)
@@ -581,6 +599,7 @@ class SpaceInvaders(object):
             self.makeNewShip = True
             self.shipTimer = time.get_ticks()
             self.shipAlive = False
+            self.buzzmotor()
 
         if self.enemies.bottom >= 540:
             sprite.groupcollide(self.enemies, self.playerGroup, True, True)

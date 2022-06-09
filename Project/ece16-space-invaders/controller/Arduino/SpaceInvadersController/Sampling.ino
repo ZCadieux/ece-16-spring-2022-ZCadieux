@@ -23,7 +23,7 @@ bool sampleSensors() {
     // Read the sensors and store their outputs in global variables
     sampleTime = millis();
     readAccelSensor();     // values stored in "ax", "ay", and "az"
-    readPhotoSensor();     // value stored in "ppg"
+//    readPhotoSensor();     // value stored in "ppg"
     return true;
   }
 

@@ -5,18 +5,24 @@
 /*
  * Configure the analog input pins to the accelerometer's 3 axes
  */
-const int X_PIN = A4;
+const int X_PIN = A2;
 const int Y_PIN = A3;
-const int Z_PIN = A2;
+const int Z_PIN = A4;
 
 /*
  * Set the "zero" states when each axis is neutral
  * NOTE: Customize this for your accelerometer sensor!
  */
-const int X_ZERO = 1850;
-const int Y_ZERO = 1850;
-const int Z_ZERO = 1950;
+int X_ZERO = 1950;
+int Y_ZERO = 1960;
+int Z_ZERO = 2440;
 
+/*
+ * Set threshold values
+ */
+const int level = 50;
+const int slow = 100;
+//const int fast = 200;
 
 /*
  * Configure the analog pins to be treated as inputs by the MCU
@@ -37,6 +43,27 @@ void readAccelSensor() {
 }
 
 /*
+ * Find zeros
+ */
+ int i = 0;
+ int sumx = 0;
+ int sumy = 0;
+ int sumz = 0;
+ int numsamples = 10;
+ 
+ void calibrateZero() {
+  for (i = 0; i < numsamples; ++i) {
+    readAccelSensor();
+    sumx += ax;
+    sumy += ay;
+    sumz += az;
+  }
+  X_ZERO = sumx/numsamples;
+  Y_ZERO = sumy/numsamples;
+  Z_ZERO = sumz/numsamples;
+ }
+
+/*
  * Get the orientation of the accelerometer
  * Returns orientation as an integer:
  * 0 == flat
@@ -53,24 +80,34 @@ int getOrientation() {
   int y = ay - Y_ZERO;
   int z = az - Z_ZERO;
 
-  // If ax has biggest magnitude, it's either left or right
-  if(abs(x) >= abs(y) && abs(x) >= abs(z)) {
-    if( x < 0 ) // left
-      orientation = 3;
-    else
-      orientation = 4;
+  if(x >= -level && x <= level) { // level
+    orientation = 0;
   }
-  // If ay has biggest magnitude, it's either up or down
-  else if(abs(y) >= abs(x) && abs(y) >= abs(z)) {
-    if( y < 0 ) // up
-      orientation = 1;
-    else // down
-      orientation = 2;
+  if(x > level) { // right
+    orientation = 4;
   }
-  // If az biggest magnitude, it's flat (or upside-down)
-  else if(abs(z) > abs(x) && abs(z) >= abs(y)) {
-    orientation = 0; // flat
+  if(x < -level) { // left
+    orientation = 3;
   }
+  
+//  // If ax has biggest magnitude, it's either left or right
+//  if(abs(x) >= abs(y) && abs(x) >= abs(z)) {
+//    if( x < 0 ) // left
+//      orientation = 3;
+//    else
+//      orientation = 4;
+//  }
+//  // If ay has biggest magnitude, it's either up or down
+//  else if(abs(y) >= abs(x) && abs(y) >= abs(z)) {
+//    if( y < 0 ) // up
+//      orientation = 1;
+//    else // down
+//      orientation = 2;
+//  }
+//  // If az biggest magnitude, it's flat (or upside-down)
+//  else if(abs(z) > abs(x) && abs(z) >= abs(y)) {
+//    orientation = 0; // flat
+//  }
 
   return orientation;
 }

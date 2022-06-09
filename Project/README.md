@@ -29,6 +29,9 @@ To use the Space Invaders controller first all the files need to be downloaded a
 
 Here is a video displaying controller functions.
 
+[![Elevator Explanation and Demo](https://img.youtube.com/vi/dP79kfdSzHg/0.jpg)](https://youtu.be/dP79kfdSzHg)
+
+
 # ECE 16 Grand Challenge - Contactless Elevator Controller
 
 An OpenCV based controller for Space Invaders to control an elevator with a combination of the ESP32 and a camera.
@@ -40,6 +43,10 @@ This is an imporant issue to address because elevators are a very high traffic c
 The intended users are anyone using an elevator, including people who may not be able to reach or press normal elevator buttons for whatever reason such as physical disabilities. Additionally anyone who wants to minimize their exposure to potentially hazardous contact surfaces.
 
 Our solution addresses these issues by allowing a user to activate an elevator and choose a floor to go to without touching any surface, in a way that is very repeatable and scalable.
+
+Here is an explanation of our system, as explained in text below, as well as a demonstration of it functioning.
+
+[![Elevator Explanation and Demo](https://img.youtube.com/vi/6f-8La9IHtE/0.jpg)](https://youtu.be/6f-8La9IHtE)
 
 ## Dependencies
 
