@@ -1,3 +1,8 @@
+Team: 
+Zachary Cadieux A15912942
+
+Gillian McMahon A15458974
+
 # ECE 16 Grand Challenge - Space Invaders Controller
 A socket-based controller for Space Invaders to controller the game wirelessly with the ESP32.
 
