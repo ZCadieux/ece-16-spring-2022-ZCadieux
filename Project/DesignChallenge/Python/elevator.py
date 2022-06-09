@@ -5,7 +5,7 @@ from time import sleep
 import traceback
 
 if __name__ == "__main__":
-    num_samples = 100           
+    num_samples = 40          
     process_time = .5          
     
     tracker = HandTracker(num_samples) # HandTracker using defaults of 2, .8, 0
@@ -35,8 +35,8 @@ if __name__ == "__main__":
                     if("Arrived" in message):
                         moving = False
                         print("Arrived!")
-                    if("moving" in message):
-                        print("moving")
+                    if("moving" in message and not moving):
+                        print("Moving...")
                         moving = True
                         continue
 

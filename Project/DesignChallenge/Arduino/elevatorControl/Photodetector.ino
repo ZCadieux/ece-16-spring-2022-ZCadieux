@@ -6,7 +6,7 @@
 MAX30105 photoSensor; // instantiate the Photodetector object
 const int MAX_READING = 32767; // 2^15-1; might change w/config – TEST IT!!
 const int PPG_avg = 32000;
-const int PPG_thresh = 750;
+const int PPG_thresh = 500;
 const int PPG_checkTime = 100;
 int PPG_lastCheck = millis();
 

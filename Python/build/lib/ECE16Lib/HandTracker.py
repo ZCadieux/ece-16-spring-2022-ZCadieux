@@ -41,7 +41,7 @@ class HandTracker:
 
     # Check if same count has been held up for 1 second
     def checkFinger(self):
-        print(self.__fingerList)
+        #print(self.__fingerList)
         recentVal = self.__fingerList[-1]
         for item in self.__fingerList:
             if item != recentVal:
